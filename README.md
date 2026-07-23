@@ -1,5 +1,7 @@
 # oolog
 
+[![CI](https://github.com/alansammarone/oolog/actions/workflows/ci.yml/badge.svg)](https://github.com/alansammarone/oolog/actions/workflows/ci.yml)
+
 A typed [OpenObserve](https://openobserve.ai) logs CLI, and a Claude Code plugin that teaches
 Claude to use it.
 
