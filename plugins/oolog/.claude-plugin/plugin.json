@@ -1,4 +1,5 @@
 {
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "oolog",
   "description": "Investigate application logs stored in OpenObserve. Teaches Claude to query, filter, tail, and aggregate log streams with the oo CLI.",
   "version": "0.1.0",
