@@ -1,0 +1,11 @@
+.python-version
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+
+# Local working notes
+docs/superpowers/
+NEXT-STEPS.md
+TODO.md

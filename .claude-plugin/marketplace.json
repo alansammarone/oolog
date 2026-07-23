@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "oolog",
+  "description": "Claude Code plugins for working with OpenObserve logs",
+  "owner": {
+    "name": "Alan Sammarone",
+    "email": "alansammarone@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "oolog",
+      "source": "./plugins/oolog",
+      "category": "monitoring",
+      "tags": [
+        "logs",
+        "openobserve",
+        "observability",
+        "debugging"
+      ]
+    }
+  ]
+}

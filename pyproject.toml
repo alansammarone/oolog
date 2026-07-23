@@ -1,0 +1,42 @@
+[project]
+name = "oolog"
+version = "0.1.0"
+description = "Typed OpenObserve logs CLI"
+readme = "README.md"
+authors = [
+    { name = "Alan Sammarone", email = "alansammarone@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.0",
+    "structlog>=25.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[project.scripts]
+oo = "oolog.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.8.22,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.ruff.lint]
+select = ["I", "F401"]
+
+[dependency-groups]
+dev = [
+    "docformatter>=1.7.7",
+    "invoke>=2.2.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
+]
