@@ -4,10 +4,12 @@ from typing import Any, Literal
 
 from pydantic import BaseModel
 
+FilterOp = Literal["eq", "ne", "contains"]
+
 
 class Filter(BaseModel):
     field: str
-    op: Literal["eq", "ne", "contains"]
+    op: FilterOp
     value: str
 
 

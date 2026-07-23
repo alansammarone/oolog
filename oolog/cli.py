@@ -14,10 +14,15 @@ from pydantic import ValidationError
 from oolog.client import OpenObserveClient
 from oolog.config import OOSettings
 from oolog.render import format_line
-from oolog.schemas import Filter, LogQuery, LogRecord, Selector, TailRequest
+from oolog.schemas import Filter, FilterOp, LogQuery, LogRecord, Selector, TailRequest
 
 _DURATION = re.compile(r"^(\d+)([smhd])$")
 _UNIT_S: dict[str, int] = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+_FILTER_OPS: tuple[tuple[str, FilterOp], ...] = (
+    ("!=", "ne"),
+    ("~", "contains"),
+    ("=", "eq"),
+)
 _SIGINT_EXIT = 130
 
 
@@ -46,11 +51,18 @@ def _parse_since(spec: str) -> int:
 
 
 def _parse_filter(spec: str) -> Filter:
-    for op_str, op_name in (("!=", "ne"), ("~", "contains"), ("=", "eq")):
-        if op_str in spec:
-            field, value = spec.split(op_str, 1)
-            return Filter(field=field.strip(), op=op_name, value=value)
-    _die(f"bad -f value (need key=value, key!=value, or key~value): {spec!r}")
+    # Whichever operator appears first wins, so the rest of the spec stays in the
+    # value: "path=/a/b~c" is an equality on "/a/b~c", not a LIKE on "c".
+    candidates: list[tuple[int, str, FilterOp]] = [
+        (spec.index(op_str), op_str, op_name)
+        for op_str, op_name in _FILTER_OPS
+        if op_str in spec
+    ]
+    if not candidates:
+        _die(f"bad -f value (need key=value, key!=value, or key~value): {spec!r}")
+    _, op_str, op_name = min(candidates)
+    field, value = spec.split(op_str, 1)
+    return Filter(field=field.strip(), op=op_name, value=value)
 
 
 def _build_selector(args: argparse.Namespace) -> Selector:

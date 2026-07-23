@@ -305,6 +305,35 @@ def test_cli_rejects_sql_with_multiple_streams(monkeypatch) -> None:
         cli.main()
 
 
+def _sql_for_filter(monkeypatch, spec: str) -> str:
+    captured: dict = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["sql"] = json.loads(request.content)["query"]["sql"]
+        return httpx.Response(200, json={"hits": []})
+
+    monkeypatch.setattr(cli, "_make_client", lambda args: _make_client(handler))
+    monkeypatch.setattr(sys, "argv", ["oo", "show", "api", "-f", spec])
+    cli.main()
+    return captured["sql"]
+
+
+def test_filter_splits_on_the_earliest_operator(monkeypatch) -> None:
+    assert "path = '/a/b~c'" in _sql_for_filter(monkeypatch, "path=/a/b~c")
+
+
+def test_filter_keeps_equals_after_a_tilde_inside_the_value(monkeypatch) -> None:
+    assert "message LIKE '%a=b%'" in _sql_for_filter(monkeypatch, "message~a=b")
+
+
+def test_filter_reads_not_equal_as_one_operator(monkeypatch) -> None:
+    assert "level != 'info'" in _sql_for_filter(monkeypatch, "level!=info")
+
+
+def test_filter_keeps_not_equal_after_an_equals_inside_the_value(monkeypatch) -> None:
+    assert "path = '/a!=b'" in _sql_for_filter(monkeypatch, "path=/a!=b")
+
+
 def _clear_settings_env(monkeypatch) -> None:
     for suffix in ("URL", "ORG", "USER", "PASSWORD"):
         monkeypatch.delenv(f"OPENOBSERVE_{suffix}", raising=False)
